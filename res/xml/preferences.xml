@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Radar Image Settings">
+    	<me.mattsutter.conditionred.OpacityPreference
+    		android:key="me.mattsutter.conditionred.Opacity"
+    		android:title="Transparency"
+    		android:summary="How translucent the radar image is"
+    		android:defaultValue="40"
+    		android:text=" %"
+    		android:max="100"	/>
+    	<CheckBoxPreference
+    		android:key="me.mattsutter.conditionred.FullResolution"
+    		android:title="Display full res images"
+    		android:summary="Uncheck to disable redrawing after zooming/panning"	
+    		android:defaultValue="true"	
+    		android:persistent="true" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Other" >
+       <!--  <Preference 
+            android:title="Quick Intro"
+            android:summary="Learn how to use Condition Red"
+            android:key="intro" 
+            android:persistent="false" /> -->
+        <Preference 
+            android:title="Contact me"
+            android:summary="Have a bug to report or a feature request?"
+            android:key="contact_me" 
+            android:persistent="false" />
+        <Preference
+            android:title="About" 
+            android:summary="@string/app_name"
+            android:key="about" 
+            android:persistent="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

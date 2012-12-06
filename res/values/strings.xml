@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Condition Red</string>
+	<string name="milwaukee">KMKX</string>
+	<string name="wisc">WI</string>
+	<string name="package_name">me.mattsutter.conditionred</string>
+	<string name="radar_site_menu">State</string>
+	<string name="city_menu">City</string>
+	<string name="product_menu">Product</string>
+	<string name="favs_menu">Favorite Sites</string>
+	<string name="settings_menu">Settings</string>
+	<string name="perm_GPS">Uses your location to find the NEXRAD radar site that is closest to you.</string>
+	<string name="perm_internet">Uses your network connection to download radar files from the NWS server.</string>
+	<string name="dl_fail">"Download Failed.\nPlease try again later."</string>
+	<string name="app_url">"http://www.conditionred.net"</string>
+	<string name="version_code">"1.0.9"</string>
+	<string name="version_number">"6"</string>
+	<string name="ok">"OK"</string>
+	
+	<bool name="debugging">true</bool>
+</resources>

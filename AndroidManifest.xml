@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="me.mattsutter.conditionred"
+      android:versionCode="6"
+      android:versionName="1.0.9">
+      
+<!--     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" /> -->
+<!-- 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
+<!-- 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"	/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	
+	<uses-sdk android:minSdkVersion="8" />
+	
+    <application android:icon="@drawable/ic_launcher" android:label="@string/app_name" 
+    				android:debuggable="true">
+    	<uses-library android:name="com.google.android.maps" />
+        <activity android:name=".RadarSiteMenu"
+                  android:label="@string/radar_site_menu">
+            <intent-filter>
+            	<action android:name="me.mattsutter.conditionred.intent.action.ChooseFavorites" />
+            	<action android:name="me.mattsutter.conditionred.intent.action.ChooseRadarSite" />
+				<category android:name="android.intent.category.DEFAULT" />	
+            </intent-filter>
+        </activity>
+        <activity android:name=".ProductsMenu"
+                  android:label="@string/product_menu">
+            <intent-filter>
+            	<action android:name="me.mattsutter.conditionred.intent.action.ChooseProduct" />
+				<category android:name="android.intent.category.DEFAULT" />	
+            </intent-filter>
+        </activity>
+        <activity android:name=".SettingsMenu"
+                  android:label="@string/settings_menu">
+            <intent-filter>
+            	<action android:name="me.mattsutter.conditionred.intent.action.ShowSettings" />
+				<category android:name="android.intent.category.DEFAULT" />	
+            </intent-filter>
+        </activity>
+        <activity android:name=".FavoritesMenu"
+                  android:label="@string/favs_menu">
+            <intent-filter>
+            	<action android:name="me.mattsutter.conditionred.intent.action.Favorites" />
+				<action android:name="android.intent.action.VIEW" />		
+				<category android:name="android.intent.category.DEFAULT" />	
+            </intent-filter>
+        </activity>
+        <activity 	
+            android:name=".MainMapActivity"
+        			android:configChanges="orientation|keyboardHidden"
+        			android:label="@string/app_name"
+        			android:launchMode="singleTop">
+			<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+                <intent-filter>
+				<action android:name="me.mattsutter.conditionred.intent.action.ShowRadarView" />
+				<category android:name="android.intent.category.DEFAULT" />			
+			</intent-filter>
+		</activity>
+		<activity	android:name="me.mattsutter.conditionred.CityMenu"
+					android:label="@string/city_menu" >
+			<intent-filter>
+				<action android:name="me.mattsutter.conditionred.intent.action.ShowCityMenu" />
+				<action android:name="android.intent.action.VIEW" />		
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>			
+		</activity>
+	</application>
+</manifest> 
