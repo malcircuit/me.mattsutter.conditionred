@@ -11,10 +11,6 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
-
 public class GlOverlay extends Overlay {
 	
 	private static final int MAX_FRAMES = 15;

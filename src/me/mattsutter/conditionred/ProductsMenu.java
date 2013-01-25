@@ -13,10 +13,10 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import static me.mattsutter.conditionred.util.DatabaseQueryHelper.PROD_NAME;
-import static me.mattsutter.conditionred.MainMapActivity.CURRENT_PROD_NAME;
-import static me.mattsutter.conditionred.MainMapActivity.CURRENT_PROD_TYPE;
-import static me.mattsutter.conditionred.MainMapActivity.CURRENT_PROD_URL;
-import static me.mattsutter.conditionred.MainMapActivity.SHOW_RADAR_VIEW;
+import static me.mattsutter.conditionred.MapActivity.CURRENT_PROD_NAME;
+import static me.mattsutter.conditionred.MapActivity.CURRENT_PROD_TYPE;
+import static me.mattsutter.conditionred.MapActivity.CURRENT_PROD_URL;
+import static me.mattsutter.conditionred.MapActivity.SHOW_RADAR_VIEW;
 
 
 /** Class that deals with all of the transactions with the radar

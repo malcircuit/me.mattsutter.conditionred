@@ -13,11 +13,11 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import static me.mattsutter.conditionred.util.DatabaseQueryHelper.SITE_STATE;
-import static me.mattsutter.conditionred.MainMapActivity.SHOW_CITY_MENU;
-import static me.mattsutter.conditionred.MainMapActivity.GET_RADAR_SITE;
-import static me.mattsutter.conditionred.MainMapActivity.PICK_SITE;
-import static me.mattsutter.conditionred.MainMapActivity.FAVS_MENU;
-import static me.mattsutter.conditionred.MainMapActivity.CURRENT_SITE_ID;
+import static me.mattsutter.conditionred.MapActivity.SHOW_CITY_MENU;
+import static me.mattsutter.conditionred.MapActivity.GET_RADAR_SITE;
+import static me.mattsutter.conditionred.MapActivity.PICK_SITE;
+import static me.mattsutter.conditionred.MapActivity.FAVS_MENU;
+import static me.mattsutter.conditionred.MapActivity.CURRENT_SITE_ID;
 
 public class RadarSiteMenu extends ListActivity{
 	private Cursor state_list;

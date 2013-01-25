@@ -10,8 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import static me.mattsutter.conditionred.MainMapActivity.ANDROID_XML;
-import static me.mattsutter.conditionred.MainMapActivity.OPACITY;
+import static me.mattsutter.conditionred.MapActivity.ANDROID_XML;
+import static me.mattsutter.conditionred.MapActivity.OPACITY;
 
 public class OpacityPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener{
 

@@ -1,8 +1,8 @@
 package me.mattsutter.conditionred;
 
-import static me.mattsutter.conditionred.MainMapActivity.PICK_SITE;
-import static me.mattsutter.conditionred.MainMapActivity.SHOW_RADAR_VIEW;
-import static me.mattsutter.conditionred.MainMapActivity.CURRENT_SITE_ID;
+import static me.mattsutter.conditionred.MapActivity.PICK_SITE;
+import static me.mattsutter.conditionred.MapActivity.SHOW_RADAR_VIEW;
+import static me.mattsutter.conditionred.MapActivity.CURRENT_SITE_ID;
 
 import me.mattsutter.conditionred.util.DatabaseQuery;
 import static me.mattsutter.conditionred.util.DatabaseQueryHelper.SITE_ID;

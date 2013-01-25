@@ -12,7 +12,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
-import static me.mattsutter.conditionred.MainMapActivity.FULL_RES;
+import static me.mattsutter.conditionred.MapActivity.FULL_RES;
 
 public class SettingsMenu extends PreferenceActivity implements OnSharedPreferenceChangeListener{
 	    

@@ -6,11 +6,10 @@ import android.os.Bundle;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.content.*;
 //import android.util.Log;
 import android.view.*;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
 
 //import me.mattsutter.conditionred.util.CacheManager;
 import me.mattsutter.conditionred.util.DatabaseQuery;
@@ -18,7 +17,7 @@ import static me.mattsutter.conditionred.util.DatabaseQueryHelper.*;
 import static me.mattsutter.conditionred.products.RadarProduct.E_BASE_REFL;
 import me.mattsutter.conditionred.R;
 
-public class MainMapActivity extends MapActivity implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener{
+public class MapActivity extends FragmentActivity implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener{
 
 	public static final String APP_NAME = "Condition Red";
 	public static final String ANDROID_XML = "http://schemas.android.com/apk/res/android";
@@ -58,9 +57,8 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
 	
 	private final Handler handler = new Handler();
 	
-	private CustomMapView map_view;
-	private GlOverlay overlay;
-	private GeoPoint center;
+//	private CustomMapView map_view;
+//	private GlOverlay overlay;
 	private ConnectivityManager conn_man;
 	protected Menu main_menu;
 	
@@ -158,9 +156,9 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
         setContentView(R.layout.mapview);
 
 		setProgressBarIndeterminateVisibility(false);
-        
-        map_view = (CustomMapView)findViewById(R.id.map_view);
-        map_view.setProgRunners(handler, progressOn, progressOff);
+//        
+//        map_view = (CustomMapView)findViewById(R.id.map_view);
+//        map_view.setProgRunners(handler, progressOn, progressOff);
 		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 		synchronized (this){
@@ -175,7 +173,7 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
 		openDatabases();
 		changeSite();
 
-		overlay = new GlOverlay(handler, this.getApplicationContext(), map_view, center);
+//		overlay = new GlOverlay(handler, this.getApplicationContext(), map_view, center);
 	    conn_man = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
 	    registerReceivers();
@@ -199,19 +197,9 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
 	protected void changeSite(){
 		//Log.i("Main", "Changing sites...");
 		int[] location = DatabaseQuery.getLatLong(site_id);
-		center = new GeoPoint(location[0] * 1000, location[1] * 1000);
-		goToPoint(center);
+//		center = new GeoPoint(location[0] * 1000, location[1] * 1000);
+//		goToPoint(center);
 	}
-	
-    @Override
-    protected boolean isLocationDisplayed(){
-    	return false;
-    }
-    
-    @Override
-    protected boolean isRouteDisplayed(){
-    	return false;
-    }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -312,7 +300,7 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
     				radar_alpha = settings.getInt(OPACITY, 50);
     				full_res = settings.getBoolean(FULL_RES, true);
     			}
-    			overlay.changeImageAlpha((short) radar_alpha);
+//    			overlay.changeImageAlpha((short) radar_alpha);
     			break;
     		default:
     			super.onActivityResult(request_code, result_code, data);
@@ -352,16 +340,16 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
     	DatabaseQuery.close();
     }
     
-    /**
-     * Moves the map to a new latitude and longitude.
-     * @param latitude
-     * @param longitude
-     */
-    private void goToPoint(GeoPoint location){    	
-    	map_view.getController().setCenter(location);
-    	map_view.getController().zoomToSpan((int)((124/60)*1000000),
-    										(int)((124/60)*1000000)	);
-    }
+//    /**
+//     * Moves the map to a new latitude and longitude.
+//     * @param latitude
+//     * @param longitude
+//     */
+//    private void goToPoint(GeoPoint location){    	
+//    	map_view.getController().setCenter(location);
+//    	map_view.getController().zoomToSpan((int)((124/60)*1000000),
+//    										(int)((124/60)*1000000)	);
+//    }
     
     /**
      * Saves the current state of the app.
@@ -423,7 +411,7 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
 		setProgressBarIndeterminateVisibility(false);
 		unregisterReceivers();
 		
-		overlay.onDestroy();
+//		overlay.onDestroy();
 
     	closeDatabases();
     	finish();
@@ -434,7 +422,7 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
     	super.onPause();
 		setProgressBarIndeterminateVisibility(false);
 		unregisterReceivers();
-      	overlay.onPause();
+//      	overlay.onPause();
     }
     
     @Override
@@ -461,11 +449,11 @@ public class MainMapActivity extends MapActivity implements GestureDetector.OnDo
     	super.onResume();
     	registerReceivers();
 	    openDatabases();
-      	overlay.onResume(prod_type, site_id, prod_url);
+//      	overlay.onResume(prod_type, site_id, prod_url);
     }
 
 	public boolean onDoubleTap(MotionEvent e) {
-		map_view.getController().zoomInFixing((int)e.getX(), (int)e.getY());
+//		map_view.getController().zoomInFixing((int)e.getX(), (int)e.getY());
 		return false;
 	}
 

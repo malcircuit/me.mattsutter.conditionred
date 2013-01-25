@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity 	
-            android:name=".MainMapActivity"
+            android:name="me.mattsutter.conditionred.MapActivity"
         			android:configChanges="orientation|keyboardHidden"
         			android:label="@string/app_name"
         			android:launchMode="singleTop">

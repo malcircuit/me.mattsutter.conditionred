@@ -3,7 +3,8 @@ package me.mattsutter.conditionred.products;
 import static me.mattsutter.conditionred.util.NWSFile.readHalfWords;
 
 import java.io.DataInputStream;
-import com.google.android.maps.GeoPoint;
+
+import me.mattsutter.conditionred.util.LatLng;
 
 /**
  * Class that holds all of the information contained in the product block
@@ -19,9 +20,9 @@ public class ProductDescriptionBlock {
 	// In bytes
 	public static final int LENGTH = 50;
 	
-	public final int latitude;
-	public final int longitude;
-	public final GeoPoint radar_center;
+	public final double latitude;
+	public final double longitude;
+	public final LatLng radar_center;
 	public final int altitude;
 	public final int type;
 	public final int mode;
@@ -45,9 +46,9 @@ public class ProductDescriptionBlock {
 		
 		buffer = readHalfWords(product, LENGTH);
 		
-		latitude = ((buffer[0] << 16) + buffer[1]) * 1000;
-		longitude = ((buffer[2] << 16) + buffer[3]) * 1000;
-		radar_center = new GeoPoint(latitude, longitude);
+		latitude = ((buffer[0] << 16) + buffer[1]) / 1000d;
+		longitude = ((buffer[2] << 16) + buffer[3]) / 1000d;
+		radar_center = new LatLng(latitude, longitude);
 		altitude = buffer[4];
 		type = buffer[5];
 		mode = buffer[6];

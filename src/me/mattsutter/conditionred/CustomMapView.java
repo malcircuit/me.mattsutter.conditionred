@@ -1,20 +1,12 @@
 package me.mattsutter.conditionred;
 
-import static me.mattsutter.conditionred.products.RadarProduct.BASE_SW_SHORT;
-import static me.mattsutter.conditionred.products.RadarProduct.D_VIL;
-import static me.mattsutter.conditionred.products.RadarProduct.E_BASE_REFL;
-import static me.mattsutter.conditionred.products.RadarProduct.E_BASE_VEL;
-import static me.mattsutter.conditionred.products.RadarProduct.E_ECHO_TOPS;
 import android.content.Context;
 import android.os.Handler;
-import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-
-public class CustomMapView extends MapView {
+public class CustomMapView extends View {
 	
 	public static final int METERS_PER_NMI = 1852;
 	//public static final float RADAR_MAP_D = 248/60;
@@ -32,27 +24,14 @@ public class CustomMapView extends MapView {
 	private Handler handler;
 	private boolean progress = false;
 
-	public CustomMapView(Context context, String apiKey) {
-		super(context, apiKey);
-		init(context);
-	}
-
-	public CustomMapView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init(context);
-	}
-	
-	public CustomMapView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	public CustomMapView(Context context) {
+		super(context);
 		init(context);
 	}
 	
 	private void init(Context context){
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
-        setBuiltInZoomControls(true);
-        setReticleDrawMode(MapView.ReticleDrawMode.DRAW_RETICLE_NEVER);
-        setWillNotDraw(false);
 	}
 
 	@Override
@@ -90,32 +69,4 @@ public class CustomMapView extends MapView {
 		
 		return progress;
 	}
-	
-	/**
-	 * Computes the width (in pixels) of the radar image based on the current projection
-	 * of the MapView.
-	 * @param map_view - MapView to get the projection of.
-	 */
-	public static float getRadarWidth(MapView map_view, int prod_type, GeoPoint radar_center){
-		switch(prod_type){
-		case E_BASE_REFL:
-		case D_VIL:
-			return (float) (map_view.getProjection().metersToEquatorPixels(LONG_DIAM) 
-					* (1 / Math.cos(Math.toRadians(radar_center.getLatitudeE6() / 1E6)) )) ;
-		case E_BASE_VEL:
-		//case SRV:
-			return(float) (map_view.getProjection().metersToEquatorPixels(VEL_DIAM) 
-					* (1 / Math.cos(Math.toRadians(radar_center.getLatitudeE6() / 1E6)) ) );
-		case E_ECHO_TOPS:
-			return (float) (map_view.getProjection().metersToEquatorPixels(ECHO_TOP_DIAM) 
-					* (1 / Math.cos(Math.toRadians(radar_center.getLatitudeE6() / 1E6)) ) );
-		case BASE_SW_SHORT:
-			return (float) (map_view.getProjection().metersToEquatorPixels(SHORT_DIAM) 
-					* (1 / Math.cos(Math.toRadians(radar_center.getLatitudeE6() / 1E6)) ) );
-		default:
-			// Don't even ask me how this works, I just copied it from somewhere on the internet. 
-			return (float) (map_view.getProjection().metersToEquatorPixels(DIAMETER) 
-						* (1 / Math.cos(Math.toRadians(radar_center.getLatitudeE6() / 1E6)) ) );
-		}
-    }
 }

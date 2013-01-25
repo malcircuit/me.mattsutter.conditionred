@@ -22,9 +22,8 @@ import me.mattsutter.conditionred.products.VILPaintArray;
 import me.mattsutter.conditionred.products.VILPalette;
 import me.mattsutter.conditionred.products.VelPaintArray;
 import me.mattsutter.conditionred.products.VelPalette;
+import me.mattsutter.conditionred.util.LatLng;
 import me.mattsutter.conditionred.util.RenderCommand;
-
-import com.google.android.maps.GeoPoint;
 
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView.Renderer;
@@ -40,7 +39,7 @@ public class RadarRenderer implements Renderer {
 		System.loadLibrary("conditionred");
 	}
 	
-	private GeoPoint radar_center;
+	private LatLng radar_center;
 	private short image_alpha = 200;
 	private float radar_width = 0;
 	private PointF center = new PointF(0, 0);

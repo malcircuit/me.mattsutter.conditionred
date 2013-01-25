@@ -2,13 +2,7 @@ package me.mattsutter.conditionred;
 
 import android.graphics.Point;
 import android.graphics.PointF;
-
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-
 import me.mattsutter.conditionred.util.RenderCommand;
-
-import static me.mattsutter.conditionred.CustomMapView.getRadarWidth;
 
 public class MapChangeCommand implements RenderCommand {
 
