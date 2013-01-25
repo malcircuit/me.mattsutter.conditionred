@@ -10,6 +10,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -28,11 +29,11 @@ public class RadarView extends GLSurfaceView {
 	
 	private static final int MAX_FRAMES = 15;
 	
-	protected final RadarRenderer renderer;
+	private final RadarRenderer renderer;
 	private final ConcurrentLinkedQueue<RenderCommand> queue = new ConcurrentLinkedQueue<RenderCommand>();
 	private final ProductManager prod_man;
+	private final GestureDetector gest_detect;
 	
-	private GestureDetector gest_detect;
 	private Runnable progOn, progOff;
 	private Handler handler;
 	private boolean progress = false;
@@ -43,20 +44,43 @@ public class RadarView extends GLSurfaceView {
 	private String site_id = "";
 	private String prod_url = "";
 	
+	/**
+	 * Constructor for RadarView. Used to inflate the {@link View} programmatically. 
+	 * @param context - The app's {@link Context}.
+	 */
 	public RadarView(Context context) {
 		super(context);
 		renderer = new RadarRenderer(queue, MAX_FRAMES);
-
+		init();
+		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
+		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
+		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
+	}
+	
+	/**
+	 * Consructor for RadarView.  Called when inflating via {@link #findViewById(int)}.
+	 * @param context - The app's {@link Context}.
+	 * @param attrs - Layout parameters from the XML file.
+	 */
+	public RadarView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		renderer = new RadarRenderer(queue, MAX_FRAMES);
+		init();
+		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
+		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
+		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
+	}
+	
+	/** 
+	 * Sets up the {@link GLSurfaceView} stuff.
+	 */
+	public void init(){
 		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 		setRenderer(renderer);
 //		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 		getHolder().setFormat(PixelFormat.TRANSLUCENT);
 		setZOrderOnTop(true);
-		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
-		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
-
-		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
 	}
 	
 	public void onResume(int prod_code, String site_id, String prod_url){
