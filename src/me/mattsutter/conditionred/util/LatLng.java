@@ -2,6 +2,8 @@ package me.mattsutter.conditionred.util;
 
 import java.lang.Math;
 
+import android.graphics.PointF;
+
 public class LatLng {
 
 	private static final double RADIUS = 3000; //Made this up.  Please change
@@ -24,5 +26,9 @@ public class LatLng {
 	
 	public double getY(){
 		return RADIUS * Math.log(Math.tan(Math.PI/4 + Math.toRadians(lat)/2));
+	}
+	
+	public PointF toPixels(){
+		return new PointF((float)getX(), (float)getY());
 	}
 }
