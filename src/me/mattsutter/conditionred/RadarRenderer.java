@@ -139,7 +139,7 @@ public class RadarRenderer implements Renderer {
 	
 	private void mapChange(MapChangeCommand command){
 		center = command.radar_center;
-		radar_width = command.radar_width;
+//		radar_width = command.radar_width;
 		if (command.site_change)
 			deInitAnimation();
 	}
