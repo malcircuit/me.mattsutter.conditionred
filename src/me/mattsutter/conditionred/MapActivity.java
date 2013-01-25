@@ -3,10 +3,10 @@ package me.mattsutter.conditionred;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.content.*;
 //import android.util.Log;
 import android.view.*;
@@ -17,7 +17,7 @@ import static me.mattsutter.conditionred.util.DatabaseQueryHelper.*;
 import static me.mattsutter.conditionred.products.RadarProduct.E_BASE_REFL;
 import me.mattsutter.conditionred.R;
 
-public class MapActivity extends FragmentActivity implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener{
+public class MapActivity extends Activity implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener{
 
 	public static final String APP_NAME = "Condition Red";
 	public static final String ANDROID_XML = "http://schemas.android.com/apk/res/android";
