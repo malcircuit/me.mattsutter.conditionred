@@ -1,12 +1,20 @@
 package me.mattsutter.conditionred;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import me.mattsutter.conditionred.util.LatLng;
+import me.mattsutter.conditionred.util.ProductManager;
+import me.mattsutter.conditionred.util.RenderCommand;
 import android.content.Context;
+import android.graphics.PixelFormat;
+import android.graphics.Point;
+import android.opengl.GLSurfaceView;
 import android.os.Handler;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 
-public class CustomMapView extends View {
+public class RadarView extends GLSurfaceView {
 	
 	public static final int METERS_PER_NMI = 1852;
 	//public static final float RADAR_MAP_D = 248/60;
@@ -18,20 +26,54 @@ public class CustomMapView extends View {
 	public static final int VEL_DIAM = 324 * METERS_PER_NMI;
 	public static final int ECHO_TOP_DIAM = 372 * METERS_PER_NMI;
 	
-	private GestureDetector gest_detect;
+	private static final int MAX_FRAMES = 15;
 	
+	protected final RadarRenderer renderer;
+	private final ConcurrentLinkedQueue<RenderCommand> queue = new ConcurrentLinkedQueue<RenderCommand>();
+	private final ProductManager prod_man;
+	
+	private GestureDetector gest_detect;
 	private Runnable progOn, progOff;
 	private Handler handler;
 	private boolean progress = false;
-
-	public CustomMapView(Context context) {
-		super(context);
-		init(context);
-	}
+	private Point center = new Point();
+	private LatLng radar_center;
+	private int prod_code = 0;
+	private float radar_width = 0;
+	private String site_id = "";
+	private String prod_url = "";
 	
-	private void init(Context context){
+	public RadarView(Context context) {
+		super(context);
+		renderer = new RadarRenderer(queue, MAX_FRAMES);
+
+		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+		setRenderer(renderer);
+//		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+		getHolder().setFormat(PixelFormat.TRANSLUCENT);
+		setZOrderOnTop(true);
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
+
+		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
+	}
+	
+	public void onResume(int prod_code, String site_id, String prod_url){
+		prod_man.onResume();
+		final boolean site_has_changed = checkForSiteChange(site_id);
+		final boolean prod_has_changed = checkForProductChange(prod_code, prod_url);
+		if (site_has_changed || prod_has_changed){
+			Log.d("GLOverlay", "Product or site has changed.");
+			prod_man.productChange(prod_url, site_id);
+			prod_man.startAnimation();
+		}
+		
+		onResume();
+	}
+	
+	public void onDestroy(){
+		prod_man.onDestroy();
 	}
 
 	@Override
@@ -39,6 +81,38 @@ public class CustomMapView extends View {
 		if (gest_detect.onTouchEvent(e))
 			return true;
 		return super.onTouchEvent(e);
+	}
+	
+	private boolean checkForProductChange(int prod_code, String prod_url){
+		final boolean prod_has_changed = this.prod_code != prod_code;
+		final boolean url_has_changed = !prod_url.equals(this.prod_url);
+		if (prod_has_changed){
+			queue.add(new ProductChangeCommand(prod_code));
+			this.prod_code = prod_code;
+		}
+		if (url_has_changed)
+			this.prod_url = prod_url;
+		
+		return url_has_changed || prod_has_changed;
+	}
+	
+	private boolean checkForSiteChange(String site){
+		final boolean has_changed = !site_id.equals(site);
+		if (has_changed){
+			queue.add(new MapChangeCommand(prod_code, radar_center, true));
+			site_id = site;
+		}
+		
+		return has_changed;
+	}
+	
+	protected void changeImageAlpha(short alpha){
+		queue.add(new AlphaChangeCommand(alpha));
+	}
+	
+	protected void mapHasChanged(LatLng new_center){
+		radar_center = new_center;
+		queue.add(new MapChangeCommand(prod_code, radar_center, false));
 	}
 
 	protected void setProgRunners(Handler hand, Runnable progOn, Runnable progOff){
