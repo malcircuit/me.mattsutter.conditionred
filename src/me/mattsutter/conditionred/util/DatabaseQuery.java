@@ -22,7 +22,7 @@ public class DatabaseQuery{
 	
 	/**
 	 * Opens the database (if it's not already loaded).
-	 * @param context - Application context in which to find the database.
+	 * @param context - Application {@link Context} in which to find the database.
 	 */
 	public static void open(Context context){
 		if (!is_loaded){
@@ -190,10 +190,20 @@ public class DatabaseQuery{
 
 	/**
 	 * Generates a list of all of the states in the database.
-	 * @return Returns a cursor containing the states.
+	 * @return Returns a {@link Cursor} containing the states.
 	 */
 	public static Cursor getStates(){
 		String query = "SELECT state, _id FROM sites GROUP BY state ORDER BY state ASC";
+		
+		return radar_db.rawQuery(query, null);
+	}
+	
+	/**
+	 * Generates a list of all of the site in the database.
+	 * @return Returns a {@link Cursor} containing the sites.
+	 */
+	public static Cursor getSites(){
+		String query = "SELECT site, _id FROM sites";
 		
 		return radar_db.rawQuery(query, null);
 	}
@@ -266,7 +276,7 @@ public class DatabaseQuery{
 
 	/**
 	 * Generates a list of all the products in the database;
-	 * @return Cursor containing the list of products.
+	 * @return {@link Cursor} containing the list of products.
 	 */
 	public static Cursor getProductNames(){
 		String query = "SELECT " + PROD_NAME 
@@ -279,7 +289,7 @@ public class DatabaseQuery{
 	/**
 	 * Finds a product's code given its complementary URL extension.
 	 * @param product_url - URL extension for the product you're looking for.
-	 * @return Product code.  Returns Integer.MAX_VALUE if something went wrong.
+	 * @return Product code.  Returns {@link Integer.MAX_VALUE} if something went wrong.
 	 */
 	public static int getProductCode(String product_url){
 		int result;
@@ -374,8 +384,8 @@ public class DatabaseQuery{
 	/**
 	 * Finds the product code and elevation angle for a product given its URL extension.
 	 * @param prod_url - URL extension for the product you're looking for.
-	 * @return Integer array: product code [0], elevation angle [1]. Returns Integer.MAX_VALUE if
-	 * something went wrong.
+	 * @return {@link Integer} array: product code [0], elevation angle [1]. Returns 
+	 * {@link Integer.MAX_VALUE} if something went wrong.
 	 */
 	public static int[] getProductTypeAndAngle(String prod_url){
 		int[] result = new int[2];
