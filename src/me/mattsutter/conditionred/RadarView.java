@@ -54,7 +54,7 @@ public class RadarView extends GLSurfaceView {
 	 */
 	public RadarView(Context context) {
 		super(context);
-		renderer = new RadarRenderer(queue, MAX_FRAMES);
+		renderer = new RadarRenderer(context, queue, MAX_FRAMES);
 		init();
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
@@ -69,7 +69,7 @@ public class RadarView extends GLSurfaceView {
 	 */
 	public RadarView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		renderer = new RadarRenderer(queue, MAX_FRAMES);
+		renderer = new RadarRenderer(context, queue, MAX_FRAMES);
 		init();
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);

@@ -3,6 +3,8 @@ package me.mattsutter.conditionred;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import com.android.texample.GLText;
+
 import me.mattsutter.conditionred.products.ColorPalettes;
 import me.mattsutter.conditionred.products.EchoTopPaintArray;
 import me.mattsutter.conditionred.products.EchoTopPalette;
@@ -25,6 +27,7 @@ import me.mattsutter.conditionred.products.VelPalette;
 import me.mattsutter.conditionred.util.LatLng;
 import me.mattsutter.conditionred.util.RenderCommand;
 
+import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;
@@ -47,16 +50,18 @@ public class RadarRenderer implements Renderer {
 	private final int frame_num;
 	private Palette color_palette;
 	private int current_frame = -1;
+	private GLText gl_text;
+	private final Context context;
 	
 	private boolean is_init = false;
 	
 //	private final RenderCommandQueue map_queue, product_queue;
 	private final ConcurrentLinkedQueue<RenderCommand> queue;
 		
-	//TODO: Change constructor so that a product can be added/changed asynchronously. 
-	public RadarRenderer(ConcurrentLinkedQueue<RenderCommand> q, int frame_num){
+	public RadarRenderer(Context context, ConcurrentLinkedQueue<RenderCommand> q, int frame_num){
 		queue = q;
 		this.frame_num = frame_num;
+		this.context = context;
 	}
 	
 	public void deInitAnimation(){
@@ -97,6 +102,13 @@ public class RadarRenderer implements Renderer {
 
 		gl.glDisable(GL10.GL_CULL_FACE);
 		gl.glShadeModel(GL10.GL_FLAT);
+
+		// Create the GLText
+		gl_text = new GLText( gl, context.getAssets() );
+
+		// Load the font from file (set size + padding), creates the texture
+		// NOTE: after a successful call to this the font is ready for rendering!
+		gl_text.load( "Roboto-Regular.ttf", 14, 2, 2 ); 
 	}
 	
 	private void checkForCommands(){
@@ -135,6 +147,20 @@ public class RadarRenderer implements Renderer {
 			current_frame = command.current_frame;
 			bufferFrame(current_frame);
 		}
+	}
+	
+	private void drawSiteIndicator(GL10 gl, String site_id, LatLng coords){
+		gl.glEnable( GL10.GL_TEXTURE_2D );              // Enable Texture Mapping
+		gl.glEnable( GL10.GL_BLEND );                   // Enable Alpha Blend
+		gl.glBlendFunc( GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA );  // Set Alpha Blend Function
+
+		gl_text.begin( 1.0f, 1.0f, 1.0f, 1.0f );
+		gl_text.draw( site_id, 0, 0, 0 );
+		gl_text.end();
+
+		// disable texture + alpha
+		gl.glDisable( GL10.GL_BLEND );                  // Disable Alpha Blend
+		gl.glDisable( GL10.GL_TEXTURE_2D );             // Disable Texture Mapping
 	}
 	
 	private void mapChange(MapChangeCommand command){
