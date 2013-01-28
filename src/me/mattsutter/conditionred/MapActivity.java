@@ -154,10 +154,10 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.mapview);
+        setContentView(R.layout.radarview);
 
 		setProgressBarIndeterminateVisibility(false);
-		radar_view = (RadarView)findViewById(R.id.map_view);
+		radar_view = (RadarView)findViewById(R.id.radar_view);
 		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 		synchronized (this){
