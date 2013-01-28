@@ -59,6 +59,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 	
 //	private CustomMapView map_view;
 //	private GlOverlay overlay;
+	private RadarView radar_view;
 	private ConnectivityManager conn_man;
 	protected Menu main_menu;
 	
@@ -156,9 +157,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
         setContentView(R.layout.mapview);
 
 		setProgressBarIndeterminateVisibility(false);
-//        
-//        map_view = (CustomMapView)findViewById(R.id.map_view);
-//        map_view.setProgRunners(handler, progressOn, progressOff);
+		radar_view = (RadarView)findViewById(R.id.map_view);
 		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 		synchronized (this){
@@ -173,21 +172,10 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 		openDatabases();
 		changeSite();
 
-//		overlay = new GlOverlay(handler, this.getApplicationContext(), map_view, center);
 	    conn_man = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
 	    registerReceivers();
 		this.setTitle(site_id + " - " + prod_name);
-//		canvas = new Canvas();  
-//		location_overlay = new CurrentLocation(this.getApplicationContext(), map_view);
-//		location_overlay.runOnFirstFix(new Runnable(){
-//			public void run(){
-//				goToPoint(location_overlay.getMyLocation());
-//				changeSite(location_overlay.getClosestSite());
-//			}
-//		});
-//		
-//		map_view.getOverlays().add(location_overlay);
     }
     
     /**
