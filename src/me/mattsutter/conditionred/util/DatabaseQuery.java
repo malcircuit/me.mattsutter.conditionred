@@ -66,14 +66,14 @@ public class DatabaseQuery{
 
 	public static String getProductURL(int product_type, int angle){
 		String result;
-		String[] from = {PROD_URL};
-		String where = 	PROD_TYPE + "=\""
+		final String[] from = {PROD_URL};
+		final String where = 	PROD_TYPE + "=\""
 						+ Integer.toString(product_type) + "\" and " 
 						+ PROD_ANGLE + "=\"" 
 						+ Integer.toString(angle) + "\" AND "
 						+ PROD_ENABLED + "=1";		
 
-		Cursor returnedQuery = radar_db.query(true, PRODUCT_TABLE, from, where, null, null, null, null, null);
+		final Cursor returnedQuery = radar_db.query(true, PRODUCT_TABLE, from, where, null, null, null, null, null);
 
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -94,9 +94,9 @@ public class DatabaseQuery{
 
 	public static String getSiteCity(String site_id){
 		String result;
-		String query = "SELECT DISTINCT city FROM sites WHERE site_id=\"" + site_id + "\"";
+		final String query = "SELECT DISTINCT city FROM sites WHERE site_id=\"" + site_id + "\"";
 		
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -115,12 +115,12 @@ public class DatabaseQuery{
 	 */
 	public static String getProductURL(String prod_name){
 		String result;
-		String query = "SELECT DISTINCT " + PROD_URL 
+		final String query = "SELECT DISTINCT " + PROD_URL 
 			+ " FROM products WHERE " + PROD_NAME 
 			+ "=\"" + prod_name + "\" AND "
 			+ PROD_ENABLED + "=1";	
 		
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -139,10 +139,10 @@ public class DatabaseQuery{
 	 */
 	public static String getSiteURL(String city, String state){
 		String result;
-		String[] from = {SITE_URL};
-		String where = SITE_ID + "=\"" + DatabaseQuery.getSite(city, state) + "\"";	
+		final String[] from = {SITE_URL};
+		final String where = SITE_ID + "=\"" + DatabaseQuery.getSite(city, state) + "\"";	
 		
-		Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
+		final Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -160,10 +160,10 @@ public class DatabaseQuery{
 	 */
 	public static String getSiteURL(String site){
 		String result;
-		String[] from = {SITE_URL};
-		String where = SITE_ID + "=\"" + site + "\"";	
+		final String[] from = {SITE_URL};
+		final String where = SITE_ID + "=\"" + site + "\"";	
 	
-		Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
+		final Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -183,7 +183,7 @@ public class DatabaseQuery{
 	 *  ascending order. Returns null if something went wrong.  
 	 */
 	public static Cursor getStateCities(String state){
-		String query = "SELECT city, _id FROM sites WHERE state=\"" + state + "\" GROUP BY city ORDER BY city ASC";
+		final String query = "SELECT city, _id FROM sites WHERE state=\"" + state + "\" GROUP BY city ORDER BY city ASC";
 		
 		return radar_db.rawQuery(query, null);
 	}
@@ -193,7 +193,7 @@ public class DatabaseQuery{
 	 * @return Returns a {@link Cursor} containing the states.
 	 */
 	public static Cursor getStates(){
-		String query = "SELECT state, _id FROM sites GROUP BY state ORDER BY state ASC";
+		final String query = "SELECT state, _id FROM sites GROUP BY state ORDER BY state ASC";
 		
 		return radar_db.rawQuery(query, null);
 	}
@@ -203,7 +203,20 @@ public class DatabaseQuery{
 	 * @return Returns a {@link Cursor} containing the sites.
 	 */
 	public static Cursor getSites(){
-		String query = "SELECT site, _id FROM sites";
+		final String query = "SELECT site_id, _id FROM sites";
+		
+		return radar_db.rawQuery(query, null);
+	}
+	
+	/**
+	 * Generates a {@link Cursor} containing all of the sites in the database
+	 * with their respective latitude and longitude (both fixed-point integers; 
+	 * three fractional digits).
+	 * @return {@link Cursor} with the rows: site_id (0), lat (1), long (2), 
+	 * and primary integer key (3).
+	 */
+	public static Cursor getSitesAndLatLng(){
+		final String query = "SELECT site_id, lat, long, _id FROM sites";
 		
 		return radar_db.rawQuery(query, null);
 	}
@@ -217,7 +230,7 @@ public class DatabaseQuery{
 	 * @return {@link Cursor} containing all of the sites within the bounds.
 	 */
 	public static Cursor getSitesBetween(int lat1, int lat2, int long1, int long2){
-		String query = "SELECT site_id FROM sites WHERE lat BETWEEN " 
+		final String query = "SELECT site_id FROM sites WHERE lat BETWEEN " 
 			+ lat1 + " AND " + lat2 + " AND long BETWEEN " + long1 + " AND " + long2;
 		
 		return radar_db.rawQuery(query, null);
@@ -232,13 +245,13 @@ public class DatabaseQuery{
 	 */
 	public static String getSite(String city, String state){
 		String result;
-		String[] from = {SITE_ID};
-		String where = 	SITE_STATE + "=\"" 
+		final String[] from = {SITE_ID};
+		final String where = 	SITE_STATE + "=\"" 
 						+ state + "\" AND " 
 						+ SITE_CITY + "=\"" 
 						+ city + "\"";
 		
-		Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
+		final Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -256,10 +269,10 @@ public class DatabaseQuery{
 	 * @return Integer array.  [0] latitude; [1] longitude.  Returns Integer.MAX_VALUE is something went wrong.
 	 */
 	public static int[] getLatLong(String site){
-		int[] result = {0,0};
-		String query = "SELECT DISTINCT lat, long FROM sites WHERE site_id=\"" + site + "\"";
+		final int[] result = new int[2];
+		final String query = "SELECT DISTINCT lat, long FROM sites WHERE site_id=\"" + site + "\"";
 		
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst()){
@@ -279,7 +292,7 @@ public class DatabaseQuery{
 	 * @return {@link Cursor} containing the list of products.
 	 */
 	public static Cursor getProductNames(){
-		String query = "SELECT " + PROD_NAME 
+		final String query = "SELECT " + PROD_NAME 
 			+ ", _id FROM products WHERE " + PROD_ENABLED 
 			+ "=1 GROUP BY name ORDER BY name ASC"; 		// The argument for the FROM SQL command.
 			
@@ -293,12 +306,12 @@ public class DatabaseQuery{
 	 */
 	public static int getProductCode(String product_url){
 		int result;
-		String query = "SELECT DISTINCT " + PROD_TYPE 
+		final String query = "SELECT DISTINCT " + PROD_TYPE 
 			+ ", _id FROM products WHERE " + PROD_URL 
 			+ "=\"" + product_url + "\" AND "
 			+ PROD_ENABLED + "=1"; 		// The argument for the FROM SQL command.
 			
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -317,12 +330,12 @@ public class DatabaseQuery{
 	 */
 	public static int getProductAngle(String product_name){
 		int result;
-		String query = "SELECT DISTINCT " + PROD_ANGLE 
+		final String query = "SELECT DISTINCT " + PROD_ANGLE 
 			+ ", _id FROM products WHERE " + PROD_NAME 
 			+ "=\"" + product_name + "\" AND "
 			+ PROD_ENABLED + "=1";
 		
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -341,11 +354,11 @@ public class DatabaseQuery{
 	 */
 	public static int getProductAngleFromURL(String prod_url){
 		int result;
-		String query = "SELECT DISTINCT angle, _id FROM products WHERE " 
+		final String query = "SELECT DISTINCT angle, _id FROM products WHERE " 
 			+ PROD_URL + "=\"" + prod_url + "\" AND "
 			+ PROD_ENABLED + "=1";
 		
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst())
@@ -363,12 +376,12 @@ public class DatabaseQuery{
 	 * @return Short name of the product.
 	 */
 	public static String getProductNameFromURL(String prod_url){
-		String query = "SELECT DISTINCT " + PROD_NAME 
+		final String query = "SELECT DISTINCT " + PROD_NAME 
 					+ ",_id FROM products WHERE " + PROD_URL 
 					+ "=\"" + prod_url + "\" AND "
 					+ PROD_ENABLED + "=1";
 		
-		Cursor returned_query = radar_db.rawQuery(query, null);
+		final Cursor returned_query = radar_db.rawQuery(query, null);
 		
 		String result;
 		
@@ -388,13 +401,13 @@ public class DatabaseQuery{
 	 * {@link Integer.MAX_VALUE} if something went wrong.
 	 */
 	public static int[] getProductTypeAndAngle(String prod_url){
-		int[] result = new int[2];
-		String query = "SELECT DISTINCT " + PROD_TYPE + ", " 
+		final int[] result = new int[2];
+		final String query = "SELECT DISTINCT " + PROD_TYPE + ", " 
 			+ PROD_ANGLE + ", _id FROM products WHERE " 
 			+ PROD_URL + "=\"" + prod_url + "\" AND "
 			+ PROD_ENABLED + "=1";
 		
-		Cursor returnedQuery = radar_db.rawQuery(query, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst()){
