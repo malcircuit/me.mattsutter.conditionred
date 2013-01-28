@@ -1,11 +1,14 @@
 package me.mattsutter.conditionred;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import me.mattsutter.conditionred.util.DatabaseQuery;
 import me.mattsutter.conditionred.util.LatLng;
 import me.mattsutter.conditionred.util.ProductManager;
 import me.mattsutter.conditionred.util.RenderCommand;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
@@ -33,6 +36,7 @@ public class RadarView extends GLSurfaceView {
 	private final ConcurrentLinkedQueue<RenderCommand> queue = new ConcurrentLinkedQueue<RenderCommand>();
 	private final ProductManager prod_man;
 	private final GestureDetector gest_detect;
+	private final HashMap<String, LatLng> sites;
 	
 	private Runnable progOn, progOff;
 	private Handler handler;
@@ -55,6 +59,7 @@ public class RadarView extends GLSurfaceView {
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
 		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
+		sites = initSitesMap();
 	}
 	
 	/**
@@ -69,6 +74,7 @@ public class RadarView extends GLSurfaceView {
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
 		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
+		sites = initSitesMap();
 	}
 	
 	/** 
@@ -81,6 +87,19 @@ public class RadarView extends GLSurfaceView {
 		setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 		getHolder().setFormat(PixelFormat.TRANSLUCENT);
 		setZOrderOnTop(true);
+	}
+	
+	/**
+	 * Initializes a {@link HashMap} of the radar sites for easy lookup.
+	 * @return A {@link HashMap} loaded with site ids and their respective lat/long coords.
+	 */
+	private static HashMap<String, LatLng> initSitesMap(){
+		final Cursor sites = DatabaseQuery.getSitesAndLatLng();
+		final HashMap<String, LatLng> temp = new HashMap<String, LatLng>(sites.getCount());
+		for (int i = 0; i < sites.getCount(); i++)
+			temp.put(sites.getString(0), LatLng.fromFixedPointInt(sites.getInt(1), sites.getInt(2)));
+		
+		return temp;
 	}
 	
 	public void onResume(int prod_code, String site_id, String prod_url){
