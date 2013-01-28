@@ -45,7 +45,7 @@ public class RadarView extends GLSurfaceView {
 	private String prod_url = "";
 	
 	/**
-	 * Constructor for RadarView. Used to inflate the {@link View} programmatically. 
+	 * RadarView constructor. Used to inflate the {@link View} programmatically. 
 	 * @param context - The app's {@link Context}.
 	 */
 	public RadarView(Context context) {
@@ -58,7 +58,7 @@ public class RadarView extends GLSurfaceView {
 	}
 	
 	/**
-	 * Consructor for RadarView.  Called when inflating via {@link #findViewById(int)}.
+	 * RadarView constructor.  Called when inflating via {@link #findViewById(int)}.
 	 * @param context - The app's {@link Context}.
 	 * @param attrs - Layout parameters from the XML file.
 	 */
