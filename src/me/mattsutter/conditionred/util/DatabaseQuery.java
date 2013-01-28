@@ -212,7 +212,7 @@ public class DatabaseQuery{
 	 * Generates a {@link Cursor} containing all of the sites in the database
 	 * with their respective latitude and longitude (both fixed-point integers; 
 	 * three fractional digits).
-	 * @return {@link Cursor} with the rows: site_id (0), lat (1), long (2), 
+	 * @return {@link Cursor} with the columns: site_id (0), lat (1), long (2), 
 	 * and primary integer key (3).
 	 */
 	public static Cursor getSitesAndLatLng(){
