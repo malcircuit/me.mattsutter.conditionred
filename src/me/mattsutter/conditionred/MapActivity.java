@@ -399,7 +399,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 		setProgressBarIndeterminateVisibility(false);
 		unregisterReceivers();
 		
-//		overlay.onDestroy();
+		radar_view.onDestroy();
 
     	closeDatabases();
     	finish();
@@ -410,7 +410,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
     	super.onPause();
 		setProgressBarIndeterminateVisibility(false);
 		unregisterReceivers();
-//      	overlay.onPause();
+		radar_view.onPause();
     }
     
     @Override
@@ -437,7 +437,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
     	super.onResume();
     	registerReceivers();
 	    openDatabases();
-//      	overlay.onResume(prod_type, site_id, prod_url);
+	    radar_view.onResume(prod_type, site_id, prod_url);
     }
 
 	public boolean onDoubleTap(MotionEvent e) {
