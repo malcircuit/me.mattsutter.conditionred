@@ -9,7 +9,8 @@ public class DatabaseQueryHelper extends SQLiteOpenHelper {
 	private static final String NAME = "radar.db";
 	private static final int DUAL_POL_SUPPORT_ADDED = 2;
 	private static final int FIXED_PAHG_TYPO = 3;  // PAHG lat and long had decimal points
-	private static final int DATABASE_VERSION = FIXED_PAHG_TYPO;
+	private static final int FIXED_DHSR_URL = 4;	// Digital Hybrid Scan Refl url had typo.
+	private static final int DATABASE_VERSION = FIXED_DHSR_URL;
 //	private static final int SITES_DB_LEN = 158;
 //	private static final int PRODUCTS_DB_LEN = 65;
 
@@ -48,7 +49,7 @@ public class DatabaseQueryHelper extends SQLiteOpenHelper {
 		"INSERT INTO products VALUES( 7,0,'.54 Nmi x 1 Deg',16,1,124,34,'Base Reflectivity - 124 nmi Range (angle = 3.4°)','Base Reflectivity 4',19,'DS.p19r3/')",
 		"INSERT INTO products VALUES( 8,0,'.54 Nmi x 1 Deg',16,1,124,35,'Base Reflectivity - 124 nmi Range (angle = 3.5°)','Base Reflectivity 4',19,'DS.p19r3/')",
 		"INSERT INTO products VALUES( 9,0,'1.1 Nmi x 1 Deg',16,1,248,5,'Base Reflectivity - 248 nmi Range (angle = 0.5°)','Base Reflectivity LR',20,'DS.p20-r/')",
-		"INSERT INTO products VALUES(10,0,'.54 Nmi x 1 Deg',256,33,124,0,'Digital Hybrid Scan Reflectivity','DHS Reflectivity',32,'DS.32.dhr/')",
+		"INSERT INTO products VALUES(10,0,'.54 Nmi x 1 Deg',256,33,124,0,'Digital Hybrid Scan Reflectivity','DHS Reflectivity',32,'DS.32dhr/')",
 		"INSERT INTO products VALUES(11,0,'1 km x 1 Deg',4,33,124,0,'Clutter Filter Control (Segment 1)','Clutter Filter Control 1',34,'DS.34cf1/')",
 		"INSERT INTO products VALUES(12,0,'1 km x 1 Deg',4,33,124,0,'Clutter Filter Control (Segment 2)','Clutter Filter Control 2',34,'DS.34cf2/')",
 		"INSERT INTO products VALUES(13,0,'1 km x 1 Deg',4,33,124,0,'Clutter Filter Control (Segment 3)','Clutter Filter Control 3',34,'DS.34cf3/')",
@@ -282,9 +283,17 @@ public class DatabaseQueryHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (oldVersion < FIXED_PAHG_TYPO){
+		if (oldVersion < DUAL_POL_SUPPORT_ADDED){
 			db.execSQL(DROP_TABLE + SITE_TABLE);
 			createSiteTable(db);
+		}
+		else if (oldVersion < FIXED_PAHG_TYPO){
+			db.execSQL(DROP_TABLE + SITE_TABLE);
+			createSiteTable(db);
+		}
+		else if (oldVersion < FIXED_DHSR_URL){
+			db.execSQL(DROP_TABLE + PRODUCT_TABLE);
+			createProductTable(db);
 		}
 	}
 
