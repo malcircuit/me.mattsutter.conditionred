@@ -8,7 +8,8 @@ public class DatabaseQueryHelper extends SQLiteOpenHelper {
 	
 	private static final String NAME = "radar.db";
 	private static final int DUAL_POL_SUPPORT_ADDED = 2;
-	private static final int DATABASE_VERSION = DUAL_POL_SUPPORT_ADDED;
+	private static final int FIXED_PAHG_TYPO = 3;  // PAHG lat and long had decimal points
+	private static final int DATABASE_VERSION = FIXED_PAHG_TYPO;
 //	private static final int SITES_DB_LEN = 158;
 //	private static final int PRODUCTS_DB_LEN = 65;
 
@@ -118,7 +119,7 @@ public class DatabaseQueryHelper extends SQLiteOpenHelper {
 		"INSERT INTO sites VALUES(9,1,'SI.pabc/','Alaska','Bethel','PABC',60792,-161876)",
 		"INSERT INTO sites VALUES(10,0,'SI.paec/','Alaska','Nome','PAEC',64512,-165293)",
 		"INSERT INTO sites VALUES(11,0,'SI.papd/','Alaska','Pedro Dome\n(Fairbanks)','PAPD',65035,-147501)",
-		"INSERT INTO sites VALUES(12,0,'SI.pahg/','Alaska','Kenai\n(Nikiski)','PAHG',60.726,-151.351)",
+		"INSERT INTO sites VALUES(12,0,'SI.pahg/','Alaska','Kenai\n(Nikiski)','PAHG',60726,-151351)",
 		"INSERT INTO sites VALUES(13,1,'SI.kfsx/','Arizona','Flagstaff\n(Coconino)','KFSX',34574,-111198)",
 		"INSERT INTO sites VALUES(14,1,'SI.kiwa/','Arizona','Phoenix','KIWA',33289,-111670)",
 		"INSERT INTO sites VALUES(15,1,'SI.kyux/','Arizona','Yuma','KYUX',32495,-114656)",
@@ -281,7 +282,7 @@ public class DatabaseQueryHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (oldVersion < DUAL_POL_SUPPORT_ADDED){
+		if (oldVersion < FIXED_PAHG_TYPO){
 			db.execSQL(DROP_TABLE + SITE_TABLE);
 			createSiteTable(db);
 		}
