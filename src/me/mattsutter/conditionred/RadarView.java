@@ -54,12 +54,12 @@ public class RadarView extends GLSurfaceView {
 	 */
 	public RadarView(Context context) {
 		super(context);
-		renderer = new RadarRenderer(context, queue, MAX_FRAMES);
+		sites = initSitesMap();
+		renderer = new RadarRenderer(context, queue, MAX_FRAMES, sites);
 		init();
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
 		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
-		sites = initSitesMap();
 	}
 	
 	/**
@@ -69,12 +69,12 @@ public class RadarView extends GLSurfaceView {
 	 */
 	public RadarView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		renderer = new RadarRenderer(context, queue, MAX_FRAMES);
+		sites = initSitesMap();
+		renderer = new RadarRenderer(context, queue, MAX_FRAMES, sites);
 		init();
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
 		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
-		sites = initSitesMap();
 	}
 	
 	/** 
@@ -85,8 +85,8 @@ public class RadarView extends GLSurfaceView {
 		setRenderer(renderer);
 //		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
-		getHolder().setFormat(PixelFormat.TRANSLUCENT);
-		setZOrderOnTop(true);
+//		getHolder().setFormat(PixelFormat.TRANSLUCENT);
+//		setZOrderOnTop(true);
 	}
 	
 	/**
@@ -96,21 +96,23 @@ public class RadarView extends GLSurfaceView {
 	private static HashMap<String, LatLng> initSitesMap(){
 		final Cursor sites = DatabaseQuery.getSitesAndLatLng();
 		final HashMap<String, LatLng> temp = new HashMap<String, LatLng>(sites.getCount());
-		for (int i = 0; i < sites.getCount(); i++)
+		for (int i = 0; i < sites.getCount(); i++){
+			sites.moveToPosition(i);
 			temp.put(sites.getString(0), LatLng.fromFixedPointInt(sites.getInt(1), sites.getInt(2)));
+		}
 		
 		return temp;
 	}
 	
 	public void onResume(int prod_code, String site_id, String prod_url){
-		prod_man.onResume();
-		final boolean site_has_changed = checkForSiteChange(site_id);
-		final boolean prod_has_changed = checkForProductChange(prod_code, prod_url);
-		if (site_has_changed || prod_has_changed){
-			Log.d("GLOverlay", "Product or site has changed.");
-			prod_man.productChange(prod_url, site_id);
-			prod_man.startAnimation();
-		}
+//		prod_man.onResume();
+//		final boolean site_has_changed = checkForSiteChange(site_id);
+//		final boolean prod_has_changed = checkForProductChange(prod_code, prod_url);
+//		if (site_has_changed || prod_has_changed){
+//			Log.d("GLOverlay", "Product or site has changed.");
+//			prod_man.productChange(prod_url, site_id);
+//			prod_man.startAnimation();
+//		}
 		
 		onResume();
 	}
