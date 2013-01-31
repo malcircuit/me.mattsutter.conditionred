@@ -48,18 +48,22 @@ public class LatLng {
 	/**
 	 * Converts the latitude into a x-coordinate for displaying on a
 	 * Mercator projection map.
+	 * @param long_in_deg - longitude value in degrees
 	 * @return x value
 	 */
-	public double getMercatorX(){
-		return RADIUS * lng;
+	public static double getMercatorX(double long_in_deg){
+		if (long_in_deg <= 0)
+			return RADIUS * Math.toRadians(long_in_deg);
+		return RADIUS * Math.toRadians(long_in_deg - 360d);
 	}
 	/**
 	 * Converts the longitude into a y-coordinate for displaying on a
 	 * Mercator projection map.
+	 * @param lat_in_deg - latitude value in degrees
 	 * @return y value
 	 */
-	public double getMercatorY(){
-		return RADIUS * Math.log(Math.tan(Math.PI/4 + Math.toRadians(lat)/2));
+	public static double getMercatorY(double lat_in_deg){
+		return RADIUS * Math.log(Math.tan(Math.PI/4 + Math.toRadians(lat_in_deg)/2));
 	}
 	
 	/**
@@ -68,6 +72,6 @@ public class LatLng {
 	 * @return {@link PointF} object with Mercator coordinates.
 	 */
 	public PointF toPixels(){
-		return new PointF((float)getMercatorX(), (float)getMercatorY());
+		return new PointF((float)getMercatorX(lng), (float)getMercatorY(lat));
 	}
 }
