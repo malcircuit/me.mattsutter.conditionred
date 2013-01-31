@@ -153,9 +153,11 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+		openDatabases();
+		
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.radarview);
-
 		setProgressBarIndeterminateVisibility(false);
 		radar_view = (RadarView)findViewById(R.id.radar_view);
 		
@@ -169,7 +171,6 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 			full_res = settings.getBoolean(FULL_RES, DEFAULT_FULL_RES);
 		}
 
-		openDatabases();
 		changeSite();
 
 	    conn_man = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
