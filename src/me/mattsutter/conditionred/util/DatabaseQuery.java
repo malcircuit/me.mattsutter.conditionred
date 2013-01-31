@@ -216,7 +216,7 @@ public class DatabaseQuery{
 	 * and primary integer key (3).
 	 */
 	public static Cursor getSitesAndLatLng(){
-		final String query = "SELECT site_id, lat, long, _id FROM sites";
+		final String query = "SELECT DISTINCT site_id, lat, long, _id FROM sites";
 		
 		return radar_db.rawQuery(query, null);
 	}
