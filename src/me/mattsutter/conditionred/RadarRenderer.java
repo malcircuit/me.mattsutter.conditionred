@@ -32,6 +32,7 @@ import android.graphics.PointF;
 import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static me.mattsutter.conditionred.products.RadarProduct.*;
@@ -42,9 +43,31 @@ public class RadarRenderer implements Renderer {
 		System.loadLibrary("conditionred");
 	}
 	
+	private static final String FONT_FILE = "Roboto-Regular.ttf";
+	private static final int FONT_SIZE = 14;
+	private static final int FONT_PAD_X = 2;
+	private static final int FONT_PAD_Y = 2;
+	private static final float MAX_LONG = -220.0f;
+	private static final float MIN_LONG = -60.0f;
+	private static final float MAX_LAT = 67.0f;
+	private static final float MIN_LAT = 10.0f;
+	private static final float MAP_BOTTOM = (float)LatLng.getMercatorY(MIN_LAT);
+	private static final float MAP_TOP = (float)LatLng.getMercatorY(MAX_LAT);
+	private static final float MAP_RIGHT = (float)LatLng.getMercatorX(MIN_LONG);
+	private static final float MAP_LEFT = (float)LatLng.getMercatorX(MAX_LONG);
+	
+	private static final float MAP_WIDTH = -MAP_LEFT + MAP_RIGHT;
+	private static final float MAP_HEIGHT = MAP_TOP - MAP_BOTTOM;
+	private static final float MAP_ASPECT = MAP_WIDTH/MAP_HEIGHT;
+	
+	private final HashMap<String, LatLng> sites;
+	
 	private LatLng radar_center;
 	private short image_alpha = 200;
 	private float radar_width = 0;
+	private int screen_width = 0;
+	private int screen_height = 0;
+	private float screen_aspect = 0f;
 	private PointF center = new PointF(0, 0);
 	private RenderCommand command;
 	private final int frame_num;
@@ -58,10 +81,13 @@ public class RadarRenderer implements Renderer {
 //	private final RenderCommandQueue map_queue, product_queue;
 	private final ConcurrentLinkedQueue<RenderCommand> queue;
 		
-	public RadarRenderer(Context context, ConcurrentLinkedQueue<RenderCommand> q, int frame_num){
+	public RadarRenderer(Context context, ConcurrentLinkedQueue<RenderCommand> q, int frame_num,
+			HashMap<String, LatLng> sites){
 		queue = q;
 		this.frame_num = frame_num;
 		this.context = context;
+		this.sites = sites;
+//		initVerts();
 	}
 	
 	public void deInitAnimation(){
@@ -70,31 +96,60 @@ public class RadarRenderer implements Renderer {
 			DeInit();
 			is_init = false;
 		}
-	}	
+	}
+//	
+//	private void goToPoint(GL10 gl, PointF point){
+//		gl.glTranslatef(point.x - center.x, point.y - center.y, 0);
+//		center = point;
+//	}
+//	
+//	private void setMapWidth(GL10 gl, float width){
+//		gl.glScalef(radar_width/width, radar_width/width, 0);
+//	}
 	
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+//		gl.glMatrixMode(GL10.GL_PROJECTION); 
+//		gl.glPushMatrix();
+		
+		//TODO: Do some zoom/pan stuff here.
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		
-		checkForCommands();
+		drawSiteIndicators(gl, sites, screen_width);
 		
-		if (is_init){
-			gl.glTranslatef(center.x, center.y, 0);
-			gl.glScalef(radar_width/2, radar_width/2, 0.0f);
+//		checkForCommands();
+//		
+//		if (is_init){
+//			gl.glTranslatef(center.x, center.y, 0);
+//			gl.glScalef(radar_width/2, radar_width/2, 0.0f);
+//
+////			Log.d("RadarRenderer", "Drawing Frame: " + Integer.toString(current_frame));
+//			bufferFrame(current_frame);
+//			drawImage(current_frame);
+//		}
 
-//			Log.d("RadarRenderer", "Drawing Frame: " + Integer.toString(current_frame));
-			bufferFrame(current_frame);
-			drawImage(current_frame);
-		}
+//		gl.glMatrixMode(GL10.GL_PROJECTION); 
+//		gl.glPopMatrix();
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
+		screen_width = width;
+		screen_height = height;
+		screen_aspect = (float)screen_width/(float)screen_height;
 		gl.glViewport(0, 0, width, height);
-		
+
 		gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
 		gl.glLoadIdentity();                        // reset the matrix to its default state
-		gl.glOrthof(0, width, height, 0, -1, 1);
+		
+		gl.glOrthof(MAP_LEFT, MAP_RIGHT, MAP_BOTTOM, MAP_TOP, -1, 1);
+
+		// So the map always has the same aspect ratio.
+		if (screen_aspect < MAP_ASPECT)
+			gl.glScalef(1, screen_aspect/MAP_ASPECT, 1);
+		else if (screen_aspect > MAP_ASPECT)
+			gl.glScalef(MAP_ASPECT/screen_aspect, 1, 1);
 	}	
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -104,11 +159,11 @@ public class RadarRenderer implements Renderer {
 		gl.glShadeModel(GL10.GL_FLAT);
 
 		// Create the GLText
-		gl_text = new GLText( gl, context.getAssets() );
+		gl_text = new GLText(gl, context.getAssets());
 
 		// Load the font from file (set size + padding), creates the texture
 		// NOTE: after a successful call to this the font is ready for rendering!
-		gl_text.load( "Roboto-Regular.ttf", 14, 2, 2 ); 
+		gl_text.load(FONT_FILE, FONT_SIZE, FONT_PAD_X, FONT_PAD_Y); 
 	}
 	
 	private void checkForCommands(){
@@ -149,18 +204,40 @@ public class RadarRenderer implements Renderer {
 		}
 	}
 	
-	private void drawSiteIndicator(GL10 gl, String site_id, LatLng coords){
-		gl.glEnable( GL10.GL_TEXTURE_2D );              // Enable Texture Mapping
-		gl.glEnable( GL10.GL_BLEND );                   // Enable Alpha Blend
-		gl.glBlendFunc( GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA );  // Set Alpha Blend Function
+	private void drawSiteIndicators(GL10 gl, HashMap<String, LatLng> sites, int screen_width){
+		gl.glEnable(GL10.GL_TEXTURE_2D);              // Enable Texture Mapping
+		gl.glEnable(GL10.GL_BLEND);                   // Enable Alpha Blend
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);  // Set Alpha Blend Function
+		
+		final float scale = MAP_WIDTH/screen_width;
+		final String[] site_ids = new String[sites.size()];
+		sites.keySet().toArray(site_ids);
 
-		gl_text.begin( 1.0f, 1.0f, 1.0f, 1.0f );
-		gl_text.draw( site_id, 0, 0, 0 );
-		gl_text.end();
-
+		PointF point;
+		float x, y;
+		
+		// So we don't fuck up anything else we may need to draw on the map...
+		gl.glPushMatrix();
+		// So the font textures are rendered in screen pixels...
+		gl.glScalef(scale, scale, 1);
+		for (int i = 0; i < site_ids.length; i++){
+			point = sites.get(site_ids[i]).toPixels();
+			// So the markers are still drawn in the same relative locations...
+			x = point.x / scale;
+			y = point.y / scale;
+			drawText(site_ids[i], x, y, 0);
+		}
+		gl.glPopMatrix();
+		
 		// disable texture + alpha
-		gl.glDisable( GL10.GL_BLEND );                  // Disable Alpha Blend
-		gl.glDisable( GL10.GL_TEXTURE_2D );             // Disable Texture Mapping
+		gl.glDisable(GL10.GL_BLEND);                  // Disable Alpha Blend
+		gl.glDisable(GL10.GL_TEXTURE_2D);             // Disable Texture Mapping
+	}
+	
+	private void drawText(String text, float x, float y, float z){
+		gl_text.begin(1.0f, 1.0f, 1.0f, 1.0f);
+		gl_text.drawCY(text, x, y, z);
+		gl_text.end();
 	}
 	
 	private void mapChange(MapChangeCommand command){
