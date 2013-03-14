@@ -152,10 +152,20 @@ public class LatLng {
 		return RADIUS * Math.log(Math.tan(Math.PI/4.0d + Math.toRadians(lat_in_deg)/2.0d));
 	}
 	
+	/**
+	 * Converts a Mercator y-coordinate to a latitude value.
+	 * @param merc_y
+	 * @return latitude value in degrees
+	 */
 	public static double getLatFromMercator(double merc_y){
 		return Math.toDegrees(2.0d * Math.atan(Math.exp(merc_y / RADIUS)) - Math.PI/2.0d);
 	}
 	
+	/**
+	 * Converts a Mercator x-coordinate to a longitude value.
+	 * @param merc_x
+	 * @return longitude value in degrees
+	 */
 	public static double getLongFromMercator(double merc_x){
 		return Math.toDegrees(merc_x / RADIUS);
 	}
