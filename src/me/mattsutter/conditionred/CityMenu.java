@@ -1,13 +1,17 @@
 package me.mattsutter.conditionred;
 
-import me.mattsutter.conditionred.R;
+import static me.mattsutter.conditionred.MapActivity.CURRENT_SITE_ID;
+import static me.mattsutter.conditionred.MapActivity.DEFAULT_SITE;
+import static me.mattsutter.conditionred.MapActivity.SHOW_RADAR_VIEW;
+import static me.mattsutter.conditionred.util.DatabaseQueryHelper.SITE_CITY;
+import static me.mattsutter.conditionred.util.DatabaseQueryHelper.SITE_STATE;
 import me.mattsutter.conditionred.util.DatabaseQuery;
-import android.database.Cursor;
 import android.app.ListActivity;
-import android.content.*;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-//import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,12 +21,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-
-import static me.mattsutter.conditionred.util.DatabaseQueryHelper.SITE_CITY;
-import static me.mattsutter.conditionred.util.DatabaseQueryHelper.SITE_STATE;
-import static me.mattsutter.conditionred.MainMapActivity.CURRENT_SITE_ID;
-import static me.mattsutter.conditionred.MainMapActivity.SHOW_RADAR_VIEW;
-import static me.mattsutter.conditionred.MainMapActivity.DEFAULT_SITE;
+//import android.util.Log;
 
 
 
