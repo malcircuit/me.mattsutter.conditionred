@@ -4,6 +4,11 @@ import java.lang.Math;
 
 import android.graphics.PointF;
 
+/**
+ * Class for storing latitude/longitude coordinates.
+ * @author Matt Sutter
+ *
+ */
 public class LatLng {
 
 	// This was in the wikipedia entry for Mercator projection.  
@@ -11,27 +16,108 @@ public class LatLng {
 	private static final double RADIUS = 1d; 
 	
 	private static final float FIXED_POINT_DIVISOR = 1000f;
-	private final double lat;
-	private final double lng;
+	public double lat;
+	public double lng;
+	public PointF mercator;
 
 	/**
-	 * LatLng constructor. 
+	 * {@link LatLng} constructor. 
 	 * @param lat - latitude
 	 * @param lng - longitude
 	 */
 	public LatLng(double lat, double lng){
 		this.lat = lat;
 		this.lng = lng;
+		mercator = toMercator(lat, lng);
 	}
 	
 	/**
-	 * LatLng constructor. 
+	 * {@link LatLng} constructor. 
 	 * @param lat - latitude
 	 * @param lng - longitude
 	 */
 	public LatLng(float lat, float lng){
 		this.lat = lat;
 		this.lng = lng;
+		mercator = toMercator(lat, lng);
+	}
+	
+	/**
+	 * Construct a new {@link LatLng} object from an existing one.
+	 */
+	public LatLng(LatLng coords){
+		this.lat = coords.lat;
+		this.lng = coords.lng;
+		this.mercator = new PointF(coords.mercator.x, coords.mercator.y);
+	}
+	
+	public LatLng(PointF mercator){
+		this.mercator = new PointF(mercator.x, mercator.y);
+		lat = getLatFromMercator(mercator.y);
+		lng = getLongFromMercator(mercator.x);
+	}
+	
+	/**
+	 * Move the coordinate pair by some offset.
+	 */
+	public void offset(double lat_offset, double lng_offset){
+		lat += lat_offset;
+		lng += lng_offset;
+		mercator = toMercator(lat, lng);
+	}
+	
+	/**
+	 * Move the coordinate pair by some offset.
+	 */
+	public void offset(float lat_offset, float lng_offset){
+		lat += lat_offset;
+		lng += lng_offset;
+		mercator = toMercator(lat, lng);
+	}
+	
+	public void mercatorOffset(float merc_x, float merc_y){
+		mercator.offset(merc_x, merc_y);
+		lat = getLatFromMercator(mercator.y);
+		lng = getLongFromMercator(mercator.x);
+	}
+	
+	/**
+	 * Set new latitude/longitude coordinates.
+	 * @param lat - latitude
+	 * @param lng - longitude
+	 */
+	public void set(double lat, double lng){
+		this.lat = lat;
+		this.lng = lng;
+		mercator = toMercator(lat, lng);
+	}
+	
+	/**
+	 * Set new latitude/longitude coordinates.
+	 * @param lat - latitude
+	 * @param lng - longitude
+	 */
+	public void set(float lat, float lng){
+		this.lat = lat;
+		this.lng = lng;
+		mercator = toMercator(lat, lng);
+	}
+	
+	/**
+	 * Set new latitude/longitude coordinates from an existing {@link LatLng}.
+	 * @param lat - latitude
+	 * @param lng - longitude
+	 */
+	public void set(LatLng coords){
+		mercator = new PointF(coords.mercator.x, coords.mercator.y);
+		lat = coords.lat;
+		lng = coords.lng;
+	}
+	
+	public void set(PointF mercator){
+		this.mercator = new PointF(mercator.x, mercator.y);
+		lat = getLatFromMercator(mercator.y);
+		lng = getLongFromMercator(mercator.x);
 	}
 	
 	/**
@@ -39,7 +125,7 @@ public class LatLng {
 	 * stored in the database are fixed-point integers (three fractional digits).
 	 * @param lat - latitude
 	 * @param lng - longitude 
-	 * @return new LatLng object.
+	 * @return new {@link LatLng} object.
 	 */
 	public static LatLng fromFixedPointInt(int lat, int lng){
 		return new LatLng(lat / FIXED_POINT_DIVISOR, lng / FIXED_POINT_DIVISOR);
@@ -63,15 +149,22 @@ public class LatLng {
 	 * @return y value
 	 */
 	public static double getMercatorY(double lat_in_deg){
-		return RADIUS * Math.log(Math.tan(Math.PI/4 + Math.toRadians(lat_in_deg)/2));
+		return RADIUS * Math.log(Math.tan(Math.PI/4.0d + Math.toRadians(lat_in_deg)/2.0d));
 	}
 	
+	public static double getLatFromMercator(double merc_y){
+		return Math.toDegrees(2.0d * Math.atan(Math.exp(merc_y / RADIUS)) - Math.PI/2.0d);
+	}
+	
+	public static double getLongFromMercator(double merc_x){
+		return Math.toDegrees(merc_x / RADIUS);
+	}
 	/**
 	 * Converts latitude and longitude coordinates into a {@link PointF} 
 	 * with Mercator coordinates.
 	 * @return {@link PointF} object with Mercator coordinates.
 	 */
-	public PointF toPixels(){
+	public static PointF toMercator(double lat, double lng){
 		return new PointF((float)getMercatorX(lng), (float)getMercatorY(lat));
 	}
 }

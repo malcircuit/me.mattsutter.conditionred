@@ -6,17 +6,24 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import me.mattsutter.conditionred.util.DatabaseQuery;
 import me.mattsutter.conditionred.util.LatLng;
 import me.mattsutter.conditionred.util.ProductManager;
-import me.mattsutter.conditionred.util.RenderCommand;
+import me.mattsutter.conditionred.graphics.AlphaChangeCommand;
+import me.mattsutter.conditionred.graphics.PanCommand;
+import me.mattsutter.conditionred.graphics.ProductChangeCommand;
+import me.mattsutter.conditionred.graphics.RadarRenderer;
+import me.mattsutter.conditionred.graphics.RenderCommand;
+import me.mattsutter.conditionred.graphics.ZoomCommand;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 public class RadarView extends GLSurfaceView {
 	
@@ -36,6 +43,7 @@ public class RadarView extends GLSurfaceView {
 	private final ConcurrentLinkedQueue<RenderCommand> queue = new ConcurrentLinkedQueue<RenderCommand>();
 	private final ProductManager prod_man;
 	private final GestureDetector gest_detect;
+	private final ScaleGestureDetector scale_detect;
 	private final HashMap<String, LatLng> sites;
 	
 	private Runnable progOn, progOff;
@@ -59,6 +67,7 @@ public class RadarView extends GLSurfaceView {
 		init();
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
+		scale_detect = new ScaleGestureDetector(context, (ScaleGestureDetector.OnScaleGestureListener) context);
 		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
 	}
 	
@@ -74,6 +83,7 @@ public class RadarView extends GLSurfaceView {
 		init();
 		gest_detect = new GestureDetector(context, (GestureDetector.OnGestureListener) context);
 		gest_detect.setOnDoubleTapListener((GestureDetector.OnDoubleTapListener) context);
+		scale_detect = new ScaleGestureDetector(context, (ScaleGestureDetector.OnScaleGestureListener) context);
 		prod_man = new ProductManager(context, MAX_FRAMES, true, handler, queue);
 	}
 	
@@ -125,39 +135,65 @@ public class RadarView extends GLSurfaceView {
 	public boolean onTouchEvent(MotionEvent e){
 		if (gest_detect.onTouchEvent(e))
 			return true;
+		else if (scale_detect.onTouchEvent(e))
+			return true;
 		return super.onTouchEvent(e);
 	}
-	
-	private boolean checkForProductChange(int prod_code, String prod_url){
-		final boolean prod_has_changed = this.prod_code != prod_code;
-		final boolean url_has_changed = !prod_url.equals(this.prod_url);
-		if (prod_has_changed){
-			queue.add(new ProductChangeCommand(prod_code));
-			this.prod_code = prod_code;
-		}
-		if (url_has_changed)
-			this.prod_url = prod_url;
-		
-		return url_has_changed || prod_has_changed;
+//	
+//	private boolean checkForProductChange(int prod_code, String prod_url){
+//		final boolean prod_has_changed = this.prod_code != prod_code;
+//		final boolean url_has_changed = !prod_url.equals(this.prod_url);
+//		if (prod_has_changed){
+//			queue.add(new ProductChangeCommand(prod_code));
+//			this.prod_code = prod_code;
+//		}
+//		if (url_has_changed)
+//			this.prod_url = prod_url;
+//		
+//		return url_has_changed || prod_has_changed;
+//	}
+//	
+	protected void onProductChange(int prod_code){
+		queue.add(new ProductChangeCommand(prod_code));
 	}
 	
-	private boolean checkForSiteChange(String site){
-		final boolean has_changed = !site_id.equals(site);
-		if (has_changed){
-			queue.add(new MapChangeCommand(prod_code, radar_center, true));
-			site_id = site;
-		}
-		
-		return has_changed;
+	protected void onSiteChange(String site){
+		queue.add(new PanCommand(radar_center));
 	}
 	
-	protected void changeImageAlpha(short alpha){
+//	private boolean checkForSiteChange(String site){
+//		final boolean has_changed = !site_id.equals(site);
+//		if (has_changed){
+//			queue.add(new PanCommand(radar_center));
+//			site_id = site;
+//		}
+//		
+//		return has_changed;
+//	}
+	
+	protected void onAlphaChange(short alpha){
 		queue.add(new AlphaChangeCommand(alpha));
 	}
 	
-	protected void mapHasChanged(LatLng new_center){
-		radar_center = new_center;
-		queue.add(new MapChangeCommand(prod_code, radar_center, false));
+//	protected void mapHasChanged(LatLng new_center){
+//		radar_center = new_center;
+//		queue.add(new MapChangeCommand(prod_code, radar_center, false));
+//	}
+	
+	protected void zoomMap(float x_focus, float y_focus, float scale){
+		queue.add(new ZoomCommand(x_focus, y_focus, scale));
+	}
+	
+	protected void zoomMap(float x_focus, float y_focus){
+		queue.add(new ZoomCommand(x_focus, y_focus));
+	}
+	
+	protected void panMap(float dx, float dy){
+		queue.add(new PanCommand(dx, dy));
+	}
+	
+	protected void flingMap(float vel_x, float vel_y){
+		
 	}
 
 	protected void setProgRunners(Handler hand, Runnable progOn, Runnable progOff){

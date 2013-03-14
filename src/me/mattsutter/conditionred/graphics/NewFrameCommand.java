@@ -1,11 +1,9 @@
-package me.mattsutter.conditionred;
+package me.mattsutter.conditionred.graphics;
 
 import me.mattsutter.conditionred.products.RadarProduct;
-import me.mattsutter.conditionred.util.RenderCommand;
+import me.mattsutter.conditionred.graphics.RenderCommand;
 
 public class NewFrameCommand implements RenderCommand {
-
-	private final long time_sent;
 	
 	public final int prod_code;
 	public final RadarProduct.Type type;
@@ -21,7 +19,6 @@ public class NewFrameCommand implements RenderCommand {
 	public NewFrameCommand(RadarProduct product, int frame_index){
 		type = product.type;
 		prod_code = product.prod_code;
-		time_sent = System.currentTimeMillis();
 		exp_date = product.getExpirationDate();
 		this.frame_index = frame_index;
 		rle = product.radial_layer.rle;
@@ -35,7 +32,6 @@ public class NewFrameCommand implements RenderCommand {
 			byte[][] rle, int[] thresh, int p8, int p9, int rad_bin_num, int frame_index){
 		this.type = RadarProduct.Type.RADIAL;
 		this.prod_code = prod_code;
-		time_sent = System.currentTimeMillis();
 		this.exp_date = exp_date;
 		this.rle = rle;
 		this.thresh = thresh;
@@ -48,10 +44,5 @@ public class NewFrameCommand implements RenderCommand {
 	public Type getType() {
 		return Type.NEW_FRAME;
 	}
-
-	public long getTimeSent() {
-		return time_sent;
-	}
-
 
 }

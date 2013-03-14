@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.content.*;
+import android.graphics.PointF;
 //import android.util.Log;
 import android.view.*;
 
@@ -17,7 +18,9 @@ import static me.mattsutter.conditionred.util.DatabaseQueryHelper.*;
 import static me.mattsutter.conditionred.products.RadarProduct.E_BASE_REFL;
 import me.mattsutter.conditionred.R;
 
-public class MapActivity extends Activity implements GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener{
+public class MapActivity extends Activity 
+implements 	GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener,
+			ScaleGestureDetector.OnScaleGestureListener{
 
 	public static final String APP_NAME = "Condition Red";
 	public static final String ANDROID_XML = "http://schemas.android.com/apk/res/android";
@@ -442,7 +445,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
     }
 
 	public boolean onDoubleTap(MotionEvent e) {
-//		map_view.getController().zoomInFixing((int)e.getX(), (int)e.getY());
+		radar_view.zoomMap(e.getX(), e.getY());
 		return false;
 	}
 
@@ -459,6 +462,7 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 	}
 
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		radar_view.flingMap(velocityX, velocityY);
 		return false;
 	}
 
@@ -466,7 +470,8 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 	}
 
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		return false;
+		radar_view.panMap(distanceX, distanceY);
+		return true;
 	}
 
 	public void onShowPress(MotionEvent e) {
@@ -474,5 +479,19 @@ public class MapActivity extends Activity implements GestureDetector.OnDoubleTap
 
 	public boolean onSingleTapUp(MotionEvent e) {
 		return false;
+	}
+
+	public boolean onScale(ScaleGestureDetector detector) {
+		radar_view.zoomMap(detector.getFocusX(), detector.getFocusY(), detector.getScaleFactor());
+		return true;
+	}
+
+	public boolean onScaleBegin(ScaleGestureDetector detector) {
+		radar_view.zoomMap(detector.getFocusX(), detector.getFocusY(), detector.getScaleFactor());
+		return true;
+	}
+
+	public void onScaleEnd(ScaleGestureDetector detector) {
+		radar_view.zoomMap(detector.getFocusX(), detector.getFocusY(), detector.getScaleFactor());
 	}
 }

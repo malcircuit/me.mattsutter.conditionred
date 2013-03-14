@@ -1,4 +1,4 @@
-package me.mattsutter.conditionred;
+package me.mattsutter.conditionred.graphics;
 
 import static me.mattsutter.conditionred.products.RadarProduct.MAX_SCAN_NUM;
 import static me.mattsutter.conditionred.products.RadarProduct.MIN_SCAN_NUM;

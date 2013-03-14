@@ -14,9 +14,10 @@ import android.os.Handler;
 import android.text.format.Time;
 import android.util.Log;
 
-import me.mattsutter.conditionred.Animation;
-import me.mattsutter.conditionred.FrameChangeCommand;
-import me.mattsutter.conditionred.NewFrameCommand;
+import me.mattsutter.conditionred.graphics.Animation;
+import me.mattsutter.conditionred.graphics.FrameChangeCommand;
+import me.mattsutter.conditionred.graphics.NewFrameCommand;
+import me.mattsutter.conditionred.graphics.RenderCommand;
 import me.mattsutter.conditionred.products.RadarProduct;
 
 import static me.mattsutter.conditionred.products.ProductDescriptionBlock.MJDtoCal;
