@@ -61,126 +61,136 @@ public class DatabaseQuery{
 	 * @param product_type - The product you want.
 	 * @param angle - The angle of the product. Put zero here if there is no angle.
 	 * 
-	 * 	@return Returns the URL extension of for the product. Returns null if something went wrong.
+	 * 	@return Returns the URL extension of for the product.
 	 */
 
 	public static String getProductURL(int product_type, int angle){
-		String result;
-		final String[] from = {PROD_URL};
-		final String where = 	PROD_TYPE + "=\""
-						+ Integer.toString(product_type) + "\" and " 
-						+ PROD_ANGLE + "=\"" 
-						+ Integer.toString(angle) + "\" AND "
-						+ PROD_ENABLED + "=1";		
+		final String query = "SELECT DISTINCT " + PROD_URL 
+				+ " FROM " + PRODUCT_TABLE 
+				+ " WHERE " + PROD_TYPE + "=\"" + product_type + "\" AND " 
+				+ PROD_ANGLE + "=\"" + angle + "\" AND "
+				+ PROD_ENABLED + "=1";
 
-		final Cursor returnedQuery = radar_db.query(true, PRODUCT_TABLE, from, where, null, null, null, null, null);
-
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
+		
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getString(0);
-		else
-			result = null;
+		if (returnedQuery.moveToFirst()){
+			final String result = returnedQuery.getString(0);
 
-		returnedQuery.close();
-		return result;
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No url was found for product " + product_type + " at angle " + angle + ".");
+		}
 	}
 	
-	/**	Searches the database for the url for a given product (distinguished by product code
-	 * 	and angle).  
+	/**	
+	 * Finds the city name corresponding to a site id. 
 	 * @param site_id - Four letter designator for the site (e.g. "KMKX").
 	 * 
-	 * 	@return Returns the URL extension of for the product. Returns null if something went wrong.
+	 * 	@return city name.
 	 */
 
 	public static String getSiteCity(String site_id){
-		String result;
 		final String query = "SELECT DISTINCT city FROM sites WHERE site_id=\"" + site_id + "\"";
 		
 		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getString(0);
-		else
-			result = null;
-		
-		returnedQuery.close();
-		return result;
+		if (returnedQuery.moveToFirst()){
+			final String result = returnedQuery.getString(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No city value was found for site \"" + site_id + "\".");
+		}
 	}
 		
 	/**
 	 * Find the URL extension for a given product using the name of the product.
 	 * @param prod_name - Short name of the product.
-	 * @return The URL extension. Returns null if something went wrong.
+	 * @return The URL extension.
 	 */
 	public static String getProductURL(String prod_name){
-		String result;
 		final String query = "SELECT DISTINCT " + PROD_URL 
-			+ " FROM products WHERE " + PROD_NAME 
-			+ "=\"" + prod_name + "\" AND "
+			+ " FROM " + PRODUCT_TABLE 
+			+ " WHERE " + PROD_NAME + "=\"" + prod_name + "\" AND "
 			+ PROD_ENABLED + "=1";	
 		
 		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getString(0);
-		else
-			result = null;
-		
-		returnedQuery.close();
-		return result;
+		if (returnedQuery.moveToFirst()){
+			final String result = returnedQuery.getString(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No url was found for product \"" + prod_name + "\".");
+		}
 	}
 		
 	/** Searches the database for the URL of a radar site.
 	 * @param city - City name of the site.
 	 * @param state - Two letter acronym (e.g "AK").
-	 * @return Returns the URL for a given site. Returns null if something went wrong. 
+	 * @return Returns the URL for a given site.
 	 */
 	public static String getSiteURL(String city, String state){
-		String result;
-		final String[] from = {SITE_URL};
-		final String where = SITE_ID + "=\"" + DatabaseQuery.getSite(city, state) + "\"";	
+		final String query = "SELECT DISTINCT " + PROD_URL 
+				+ " FROM " + SITE_TABLE 
+				+ " WHERE " + SITE_CITY + " =\"" + city + "\" AND " 
+				+ SITE_STATE +  " =\"" + state + "\"";
 		
-		final Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getString(0);
-		else
-			result = null;
+		if (returnedQuery.moveToFirst()){
+			final String result = returnedQuery.getString(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No site url was found for city \"" + city + ", " + state + "\".");
+		}
 		
-		returnedQuery.close();
-		return result;
 	}
 
 	/** Searches the database for the URL of a radar site.
 	 * @param site - Four letter designator for the site (e.g. "KMKX").
-	 * @return Returns the URL for a given site. Returns null if something went wrong. 
+	 * @return Returns the URL for a given site.
 	 */
-	public static String getSiteURL(String site){
-		String result;
-		final String[] from = {SITE_URL};
-		final String where = SITE_ID + "=\"" + site + "\"";	
-	
-		final Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
+	public static String getSiteURL(String site){	
+		final String query = "SELECT DISTINCT url FROM sites WHERE site_id =\"" + site + "\"";
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getString(0);
-		else
-			result = null;
+		if (returnedQuery.moveToFirst()){
+			final String result = returnedQuery.getString(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No site url was found for site \"" + site + "\".");
+		}
 		
-		returnedQuery.close();
-		return result;
 	}
 
 	/**	
 	 * Searches the database for all of the cities in a given state.
 	 * @param state - Two letter acronym (e.g "AK").
 	 * @return Returns a list of the city names for all of the sites 
-	 *  in a given state, in
-	 *  ascending order. Returns null if something went wrong.  
+	 *  in a given state, in ascending order. 
 	 */
 	public static Cursor getStateCities(String state){
 		final String query = "SELECT city, _id FROM sites WHERE state=\"" + state + "\" GROUP BY city ORDER BY city ASC";
@@ -241,50 +251,46 @@ public class DatabaseQuery{
 	 * 	state (damn you Wilmington!).
 	 * @param city - City name of the site.
 	 * @param state - Two letter acronym (e.g "AK").
-	 * @return Returns the site ID.  Returns null if something went wrong. 
+	 * @return Returns the site ID.
 	 */
-	public static String getSite(String city, String state){
-		String result;
-		final String[] from = {SITE_ID};
-		final String where = 	SITE_STATE + "=\"" 
-						+ state + "\" AND " 
-						+ SITE_CITY + "=\"" 
-						+ city + "\"";
-		
-		final Cursor returnedQuery = radar_db.query(true, SITE_TABLE, from, where, null, null, null, null, null);
+	public static String getSite(String city, String state){		
+		final String query = "SELECT DISTINCT site FROM sites WHERE state =\"" + state + "\" AND  city =\"" + city + "\"";
+		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getString(0);
-		else
-			result = null;
-		
-		returnedQuery.close();
-		return result;
+		if (returnedQuery.moveToFirst()){
+			final String result = returnedQuery.getString(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No site information was found for city \"" + city + ", " + state + "\".");
+		}
 	}
-
+	
 	/**
 	 * Find the latitude and longitude for a given site.
 	 * @param site - Site's four letter acronym. (e.g. KMKX).
-	 * @return Integer array.  [0] latitude; [1] longitude.  Returns Integer.MAX_VALUE is something went wrong.
+	 * @return LatLng object corresponding to the site.
 	 */
-	public static int[] getLatLong(String site){
-		final int[] result = new int[2];
+	public static LatLng getLatLng(String site){
 		final String query = "SELECT DISTINCT lat, long FROM sites WHERE site_id=\"" + site + "\"";
 		
 		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
 		if (returnedQuery.moveToFirst()){
-			result[0] = returnedQuery.getInt(0);
-			result[1] = returnedQuery.getInt(1);
+			final int lat = returnedQuery.getInt(0);
+			final int lng = returnedQuery.getInt(1);
+			returnedQuery.close();
+			return LatLng.fromFixedPointInt(lat, lng);
 		}
 		else{
-			result[0] = Integer.MAX_VALUE;
-			result[1] = Integer.MAX_VALUE;
+			returnedQuery.close();
+			throw new NullPointerException("No lat/long values were found for site \"" + site + "\".");
 		}
-		returnedQuery.close();
-		return result;
 	}
 
 	/**
@@ -302,10 +308,9 @@ public class DatabaseQuery{
 	/**
 	 * Finds a product's code given its complementary URL extension.
 	 * @param product_url - URL extension for the product you're looking for.
-	 * @return Product code.  Returns {@link Integer.MAX_VALUE} if something went wrong.
+	 * @return Product code.
 	 */
 	public static int getProductCode(String product_url){
-		int result;
 		final String query = "SELECT DISTINCT " + PROD_TYPE 
 			+ ", _id FROM products WHERE " + PROD_URL 
 			+ "=\"" + product_url + "\" AND "
@@ -314,22 +319,24 @@ public class DatabaseQuery{
 		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getInt(0);
-		else
-			result = Integer.MAX_VALUE;
-		
-		returnedQuery.close();
-		return result;
+		if (returnedQuery.moveToFirst()){
+			final int result = returnedQuery.getInt(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No product type was found for url \"" + product_url + "\".");
+		}
 	}
 		
 	/**
 	 * Find the elevation angle of the product.
 	 * @param product_name - Short name of the product.
-	 * @return Elevation angle.  Default is 5.
+	 * @return Elevation angle.
 	 */
 	public static int getProductAngle(String product_name){
-		int result;
 		final String query = "SELECT DISTINCT " + PROD_ANGLE 
 			+ ", _id FROM products WHERE " + PROD_NAME 
 			+ "=\"" + product_name + "\" AND "
@@ -338,13 +345,15 @@ public class DatabaseQuery{
 		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getInt(0);
-		else
-			result = 5;
-		
-		returnedQuery.close();
-		return result;
+		if (returnedQuery.moveToFirst()){
+			final int result = returnedQuery.getInt(0);
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No angle value was found for product \"" + product_name + "\".");
+		}		
 	}
 	
 	/**
@@ -353,7 +362,6 @@ public class DatabaseQuery{
 	 * @return Elevation angle.  Default is 5.
 	 */
 	public static int getProductAngleFromURL(String prod_url){
-		int result;
 		final String query = "SELECT DISTINCT angle, _id FROM products WHERE " 
 			+ PROD_URL + "=\"" + prod_url + "\" AND "
 			+ PROD_ENABLED + "=1";
@@ -361,13 +369,17 @@ public class DatabaseQuery{
 		final Cursor returnedQuery = radar_db.rawQuery(query, null);
 			
 		// Just to make sure there is actually a first row and that the cursor is there.
-		if (returnedQuery.moveToFirst())
-			result = returnedQuery.getInt(0);
-		else
-			result = 5;
+		if (returnedQuery.moveToFirst()){
+			final int result = returnedQuery.getInt(0);
+			
+			returnedQuery.close();
+			return result;
+		}
+		else{
+			returnedQuery.close();
+			throw new NullPointerException("No angle value was found for url \"" + prod_url + "\".");
+		}
 		
-		returnedQuery.close();
-		return result;
 	}
 	
 	/**
@@ -382,23 +394,24 @@ public class DatabaseQuery{
 					+ PROD_ENABLED + "=1";
 		
 		final Cursor returned_query = radar_db.rawQuery(query, null);
+				
+		if (returned_query.moveToFirst()){
+			final String result = returned_query.getString(0);
+			
+			returned_query.close();
+			return result;
+		}
+		else{
+			returned_query.close();
+			throw new NullPointerException("No product name was found for url \"" + prod_url + "\".");
+		}
 		
-		String result;
-		
-		if (returned_query.moveToFirst())
-			result = returned_query.getString(0);
-		else
-			result = "";
-		
-		returned_query.close();
-		return result;
 	}
 	
 	/**
 	 * Finds the product code and elevation angle for a product given its URL extension.
 	 * @param prod_url - URL extension for the product you're looking for.
-	 * @return {@link Integer} array: product code [0], elevation angle [1]. Returns 
-	 * {@link Integer.MAX_VALUE} if something went wrong.
+	 * @return {@link Integer} array: product code [0], elevation angle [1].
 	 */
 	public static int[] getProductTypeAndAngle(String prod_url){
 		final int[] result = new int[2];
@@ -413,13 +426,13 @@ public class DatabaseQuery{
 		if (returnedQuery.moveToFirst()){
 			result[0] = returnedQuery.getInt(0);
 			result[1] = returnedQuery.getInt(1);
+
+			returnedQuery.close();
+			return result;
 		}
 		else{
-			result[0] = Integer.MAX_VALUE;
-			result[1] = Integer.MAX_VALUE;
+			returnedQuery.close();
+			throw new NullPointerException("Type and angle values were not found for url \"" + prod_url + "\".");
 		}		
-
-		returnedQuery.close();
-		return result;
 	}
 }
