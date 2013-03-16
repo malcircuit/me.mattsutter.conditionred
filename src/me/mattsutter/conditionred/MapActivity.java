@@ -152,6 +152,10 @@ implements 	GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListen
 //    	}
 //    };
 //
+	
+	private void updateTitle(){
+		setTitle(site_id + " - " + prod_name);
+	}
 		
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -165,33 +169,21 @@ implements 	GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListen
 		radar_view = (RadarView)findViewById(R.id.radar_view);
 		
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-		synchronized (this){
-			prod_url = settings.getString(PROD_URL, DEFAULT_PROD_URL);
-			prod_type = settings.getInt(PROD_TYPE, DEFAULT_PROD_TYPE);
-			site_id = settings.getString(SITE_ID, DEFAULT_SITE);
-			prod_name = settings.getString(PROD_NAME, DEFAULT_PROD_NAME);
-			radar_alpha = settings.getInt(OPACITY, DEFAULT_ALPHA);
-			full_res = settings.getBoolean(FULL_RES, DEFAULT_FULL_RES);
-		}
 
-		changeSite();
+		prod_url = settings.getString(PROD_URL, DEFAULT_PROD_URL);
+		prod_type = settings.getInt(PROD_TYPE, DEFAULT_PROD_TYPE);
+		site_id = settings.getString(SITE_ID, DEFAULT_SITE);
+		prod_name = settings.getString(PROD_NAME, DEFAULT_PROD_NAME);
+		radar_alpha = settings.getInt(OPACITY, DEFAULT_ALPHA);
+		full_res = settings.getBoolean(FULL_RES, DEFAULT_FULL_RES);
 
+		radar_view.onSiteChange(site_id);
+
+		updateTitle();
 	    conn_man = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
 	    registerReceivers();
-		this.setTitle(site_id + " - " + prod_name);
     }
-    
-    /**
-     * Moves the map and downloads the current product when a new radar site
-     * is selected.
-     */
-	protected void changeSite(){
-		//Log.i("Main", "Changing sites...");
-		int[] location = DatabaseQuery.getLatLong(site_id);
-//		center = new GeoPoint(location[0] * 1000, location[1] * 1000);
-//		goToPoint(center);
-	}
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -249,54 +241,46 @@ implements 	GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListen
     		switch (request_code){
     		case SITE_MENU_ID:
     			// Remember what site you are at now.
-    			synchronized (this){
-    				site_id = data.getStringExtra(CURRENT_SITE_ID);
-    			}
+    			site_id = data.getStringExtra(CURRENT_SITE_ID);
 
     			// Remember what site you currently are at now.
     			editor.putString(SITE_ID, site_id);
-    			editor.commit();
 
-    			this.setTitle(site_id + " - " + prod_name);
-    			changeSite();
+    			radar_view.onSiteChange(site_id);
     			break;
     		case PRODUCTS_MENU_ID:
-    			synchronized (this){
-    				prod_type = data.getIntExtra(CURRENT_PROD_TYPE, E_BASE_REFL);
-    				prod_url = data.getStringExtra(CURRENT_PROD_URL);
-    				prod_name = data.getStringExtra(CURRENT_PROD_NAME);
-    			}
+    			prod_type = data.getIntExtra(CURRENT_PROD_TYPE, E_BASE_REFL);
+    			prod_url = data.getStringExtra(CURRENT_PROD_URL);
+    			prod_name = data.getStringExtra(CURRENT_PROD_NAME);
+    				
     			// Remember the product that is currently being displayed.
     			editor.putInt(PROD_TYPE, prod_type);
     			editor.putString(PROD_URL, prod_url);
     			editor.putString(PROD_NAME, prod_name);
-    			editor.commit();
 
-    			this.setTitle(site_id + " - " + prod_name);
+    			radar_view.onProductChange(prod_type, prod_url);
     			break;
     		case FAV_MENU_ID:
     			// Remember what site you are at now.
-    			synchronized (this){
-    				site_id = data.getStringExtra(CURRENT_SITE_ID);
-    			}
+    			site_id = data.getStringExtra(CURRENT_SITE_ID);
 
     			// Remember what site you currently are at now.
     			editor.putString(SITE_ID, site_id);
-    			editor.commit();
 
-    			this.setTitle(site_id + " - " + prod_name);
-    			changeSite();
+    			radar_view.onSiteChange(site_id);
     			break;
     		case SETTINGS_MENU_ID:
-    			synchronized (this){
-    				radar_alpha = settings.getInt(OPACITY, 50);
-    				full_res = settings.getBoolean(FULL_RES, true);
-    			}
-//    			overlay.changeImageAlpha((short) radar_alpha);
+    			radar_alpha = settings.getInt(OPACITY, 50);
+    			full_res = settings.getBoolean(FULL_RES, true);
+
+    			radar_view.onAlphaChange(radar_alpha);
     			break;
     		default:
     			super.onActivityResult(request_code, result_code, data);
     		}
+
+    		updateTitle();
+			editor.commit();
     	}
     }
 

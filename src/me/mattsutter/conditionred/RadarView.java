@@ -153,7 +153,8 @@ public class RadarView extends GLSurfaceView {
 //		return url_has_changed || prod_has_changed;
 //	}
 //	
-	protected void onProductChange(int prod_code){
+	protected void onProductChange(int prod_code, String prod_url){
+		// TODO: make sure something is done with the url
 		queue.add(new ProductChangeCommand(prod_code));
 	}
 	
@@ -171,8 +172,8 @@ public class RadarView extends GLSurfaceView {
 //		return has_changed;
 //	}
 	
-	protected void onAlphaChange(short alpha){
-		queue.add(new AlphaChangeCommand(alpha));
+	protected void onAlphaChange(int alpha){
+		queue.add(new AlphaChangeCommand((short)alpha));
 	}
 	
 //	protected void mapHasChanged(LatLng new_center){
